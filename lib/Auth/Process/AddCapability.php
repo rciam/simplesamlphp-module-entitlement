@@ -12,39 +12,39 @@ class sspmod_entitlement_Auth_Process_AddCapability extends SimpleSAML_Auth_Proc
 {
 
     /**
-     * The attribute that will hold the entitlement value.
+     * The attribute that will hold the capability value(s).
      * @var string
      */
     private $attributeName = 'eduPersonEntitlement';
 
 
     /**
-     * The assigned entitlement value.
+     * The assigned capability value(s).
      * @var string
      */
-    private $entitlement = array();
+    private $capability = array();
 
 
     /**
-     * List of IdP entity IDs excluded from this entitlement.
+     * List of IdP entity IDs excluded from this capability.
      */
     private $idpBlacklist = array();
 
 
     /**
-     * List of IdP entity IDs qualifying for this entitlement.
+     * List of IdP entity IDs qualifying for this capability.
      */
     private $idpWhitelist = array();
 
 
     /**
-     * Combination of entity attributes qualifying for this entitlement.
+     * Combination of entity attributes qualifying for this capability.
      */
     private $entityAttributeWhitelist = array();
 
 
     /**
-     * List of user entitlements qualifying for this entitlement.
+     * List of user entitlements qualifying for this capability.
      */
     private $entitlementWhitelist = array();
 
@@ -70,12 +70,12 @@ class sspmod_entitlement_Auth_Process_AddCapability extends SimpleSAML_Auth_Proc
             $this->attributeName = $config['attributeName'];
         }
 
-        if (array_key_exists('entitlement', $config)) {
-            if (!is_array($config['entitlement'])) {
-                SimpleSAML_Logger::error("[AddCapability] Configuration error: 'entitlement' not a string literal");
-                throw new Exception("AddCapability configuration error: 'entitlement' not a string literal");
+        if (array_key_exists('capability', $config)) {
+            if (!is_array($config['capability'])) {
+                SimpleSAML_Logger::error("[AddCapability] Configuration error: 'capability' not a string literal");
+                throw new Exception("AddCapability configuration error: 'capability' not a string literal");
             }
-            $this->entitlement = $config['entitlement'];
+            $this->capability = $config['capability'];
         }
 
         if (array_key_exists('idpBlacklist', $config)) {
@@ -126,7 +126,8 @@ class sspmod_entitlement_Auth_Process_AddCapability extends SimpleSAML_Auth_Proc
         if (empty($state['Attributes'][$this->attributeName])) {
             $state['Attributes'][$this->attributeName] = array();
         }
-        $state['Attributes'][$this->attributeName] = array_merge($state['Attributes'][$this->attributeName], $this->entitlement);
+        $state['Attributes'][$this->attributeName] = array_merge($state['Attributes'][$this->attributeName], $this->capability);
+        SimpleSAML_Logger::debug("[AddCapability] Adding capability " . var_export($this-->capability, true));
     }
 
 
@@ -143,7 +144,7 @@ class sspmod_entitlement_Auth_Process_AddCapability extends SimpleSAML_Auth_Proc
             $idpEntityId = $state['Source']['entityid'];
             $idpMetadata = $state['Source'];
         }
-        SimpleSAML_Logger::debug("[entitlement:GGUS] IdP="
+        SimpleSAML_Logger::debug("[AddCapability] IdP="
             . var_export($idpEntityId, true));
         if (!empty($this->idpBlacklist) && in_array($idpEntityId, $this->idpBlacklist)) {
             return false;
