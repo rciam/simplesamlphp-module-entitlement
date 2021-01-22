@@ -1,8 +1,12 @@
 <?php
 
 /**
- * Attribute filter to evaluate entitlement for access to Services.
- *
+ * Attribute filter for evaluating the resources capabilities of the 
+ * authenticating user. A capability defines the resource or child-resource the
+ * user is allowed to access, optionally specifying certain actions the user is
+ * entitled to perform. Capabilities can be used to convey – in a compact form –
+ * authorisation information. Capability values are formatted as URNs following
+ * the syntax specified in https://aarc-community.org/guidelines/aarc-g027
  */
 class sspmod_entitlement_Auth_Process_AddCapability extends SimpleSAML_Auth_ProcessingFilter
 {
