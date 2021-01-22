@@ -4,7 +4,7 @@
  * Attribute filter to evaluate entitlement for access to Services.
  *
  */
-class sspmod_entitlement_Auth_Process_ΕvaluateΕntitlement extends SimpleSAML_Auth_ProcessingFilter
+class sspmod_entitlement_Auth_Process_AddCapability extends SimpleSAML_Auth_ProcessingFilter
 {
 
     /**
@@ -60,48 +60,48 @@ class sspmod_entitlement_Auth_Process_ΕvaluateΕntitlement extends SimpleSAML_A
 
         if (array_key_exists('attributeName', $config)) {
             if (!is_string($config['attributeName'])) {
-                SimpleSAML_Logger::error("[ΕvaluateΕntitlement] Configuration error: 'attributeName' not a string literal");
-                throw new Exception("ΕvaluateΕntitlement configuration error: 'attributeName' not a string literal");
+                SimpleSAML_Logger::error("[AddCapability] Configuration error: 'attributeName' not a string literal");
+                throw new Exception("AddCapability configuration error: 'attributeName' not a string literal");
             }
             $this->attributeName = $config['attributeName'];
         }
 
         if (array_key_exists('entitlement', $config)) {
             if (!is_array($config['entitlement'])) {
-                SimpleSAML_Logger::error("[ΕvaluateΕntitlement] Configuration error: 'entitlement' not a string literal");
-                throw new Exception("ΕvaluateΕntitlement configuration error: 'entitlement' not a string literal");
+                SimpleSAML_Logger::error("[AddCapability] Configuration error: 'entitlement' not a string literal");
+                throw new Exception("AddCapability configuration error: 'entitlement' not a string literal");
             }
             $this->entitlement = $config['entitlement'];
         }
 
         if (array_key_exists('idpBlacklist', $config)) {
             if (!is_array($config['idpBlacklist'])) {
-                SimpleSAML_Logger::error("[ΕvaluateΕntitlement] Configuration error: 'idpBlacklist' not a string literal");
-                throw new Exception("ΕvaluateΕntitlement configuration error: 'idpBlacklist' not a string literal");
+                SimpleSAML_Logger::error("[AddCapability] Configuration error: 'idpBlacklist' not a string literal");
+                throw new Exception("AddCapability configuration error: 'idpBlacklist' not a string literal");
             }
             $this->idpBlacklist = $config['idpBlacklist'];
         }
 
         if (array_key_exists('idpWhitelist', $config)) {
             if (!is_array($config['idpWhitelist'])) {
-                SimpleSAML_Logger::error("[ΕvaluateΕntitlement] Configuration error: 'idpWhitelist' not a string literal");
-                throw new Exception("ΕvaluateΕntitlement configuration error: 'idpWhitelist' not a string literal");
+                SimpleSAML_Logger::error("[AddCapability] Configuration error: 'idpWhitelist' not a string literal");
+                throw new Exception("AddCapability configuration error: 'idpWhitelist' not a string literal");
             }
             $this->idpWhitelist = $config['idpWhitelist'];
         }
 
         if (array_key_exists('entityAttributeWhitelist', $config)) {
             if (!is_array($config['entityAttributeWhitelist'])) {
-                SimpleSAML_Logger::error("[ΕvaluateΕntitlement] Configuration error: 'entityAttributeWhitelist' not a string literal");
-                throw new Exception("ΕvaluateΕntitlement configuration error: 'entityAttributeWhitelist' not a string literal");
+                SimpleSAML_Logger::error("[AddCapability] Configuration error: 'entityAttributeWhitelist' not a string literal");
+                throw new Exception("AddCapability configuration error: 'entityAttributeWhitelist' not a string literal");
             }
             $this->entityAttributeWhitelist = $config['entityAttributeWhitelist'];
         }
 
         if (array_key_exists('entitlementWhitelist', $config)) {
             if (!is_array($config['entitlementWhitelist'])) {
-                SimpleSAML_Logger::error("[ΕvaluateΕntitlement] Configuration error: 'entitlementWhitelist' not a string literal");
-                throw new Exception("ΕvaluateΕntitlement configuration error: 'entitlementWhitelist' not a string literal");
+                SimpleSAML_Logger::error("[AddCapability] Configuration error: 'entitlementWhitelist' not a string literal");
+                throw new Exception("AddCapability configuration error: 'entitlementWhitelist' not a string literal");
             }
             $this->entitlementWhitelist = $config['entitlementWhitelist'];
         }
