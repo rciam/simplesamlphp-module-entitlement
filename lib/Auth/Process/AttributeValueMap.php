@@ -2,6 +2,9 @@
 
 namespace SimpleSAML\Module\entitlement\Auth\Process;
 
+use SimpleSAML\Auth\ProcessingFilter;
+use SimpleSAML\Logger;
+
 /**
  * Filter to create target attribute based on value(s) in source attribute
  *
@@ -9,7 +12,7 @@ namespace SimpleSAML\Module\entitlement\Auth\Process;
  * @package SimpleSAMLphp
  */
 
-class AttributeValueMap extends SimpleSAML\Auth\ProcessingFilter
+class AttributeValueMap extends ProcessingFilter
 {
     /**
      * The name of the attribute we should assign values to (ie: the target attribute).
@@ -25,7 +28,7 @@ class AttributeValueMap extends SimpleSAML\Auth\ProcessingFilter
      * The required $sourceAttribute values and target affiliations.
      */
     private $values = [];
-    
+
     /**
      * Whether $sourceAttribute should be kept or not.
      */
@@ -35,7 +38,7 @@ class AttributeValueMap extends SimpleSAML\Auth\ProcessingFilter
      * Whether $target attribute values should be replaced by new values or not.
      */
     private $replace = false;
-    
+
     /**
      * Initialize the filter.
      *
@@ -59,9 +62,7 @@ class AttributeValueMap extends SimpleSAML\Auth\ProcessingFilter
                     $this->keep = true;
                 } else {
                     // unknown configuration option, log it and ignore the error
-                    SimpleSAML\Logger::warning(
-                        "AttributeValueMap: unknown configuration flag '".var_export($value, true)."'"
-                    );
+                    Logger::warning("AttributeValueMap: unknown configuration flag '" . var_export($value, true) . "'");
                 }
                 continue;
             }
@@ -75,7 +76,7 @@ class AttributeValueMap extends SimpleSAML\Auth\ProcessingFilter
             if ($name === 'sourceAttribute') {
                 $this->sourceAttribute = $value;
             }
-        
+
             // set the values
             if ($name === 'values') {
                 $this->values = $value;
@@ -102,7 +103,7 @@ class AttributeValueMap extends SimpleSAML\Auth\ProcessingFilter
      */
     public function process(&$request)
     {
-        SimpleSAML\Logger::debug('Processing the AttributeValueMap filter.');
+        Logger::debug('Processing the AttributeValueMap filter.');
 
         assert(is_array($request));
         assert(array_key_exists('Attributes', $request));
@@ -122,7 +123,7 @@ class AttributeValueMap extends SimpleSAML\Auth\ProcessingFilter
                     $values = [$values];
                 }
                 if (count(array_intersect($values, $sourceAttribute)) > 0) {
-                    SimpleSAML\Logger::debug("AttributeValueMap: intersect match for '$value'");
+                    Logger::debug("AttributeValueMap: intersect match for '$value'");
                     $targetValues[] = $value;
                 }
             }

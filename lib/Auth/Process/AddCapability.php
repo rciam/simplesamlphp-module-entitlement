@@ -2,15 +2,19 @@
 
 namespace SimpleSAML\Module\entitlement\Auth\Process;
 
+use SimpleSAML\Auth\ProcessingFilter;
+use SimpleSAML\Logger;
+use SimpleSAML\Metadata\MetaDataStorageHandler;
+
 /**
- * Attribute filter for evaluating the resources capabilities of the 
+ * Attribute filter for evaluating the resources capabilities of the
  * authenticating user. A capability defines the resource or child-resource the
  * user is allowed to access, optionally specifying certain actions the user is
  * entitled to perform. Capabilities can be used to convey – in a compact form –
  * authorisation information. Capability values are formatted as URNs following
  * the syntax specified in https://aarc-community.org/guidelines/aarc-g027
  */
-class AddCapability extends SimpleSAML\Auth\ProcessingFilter
+class AddCapability extends ProcessingFilter
 {
 
     /**
@@ -66,7 +70,7 @@ class AddCapability extends SimpleSAML\Auth\ProcessingFilter
 
         if (array_key_exists('attributeName', $config)) {
             if (!is_string($config['attributeName'])) {
-                SimpleSAML\Logger::error("[AddCapability] Configuration error: 'attributeName' not a string literal");
+                Logger::error("[AddCapability] Configuration error: 'attributeName' not a string literal");
                 throw new Exception("AddCapability configuration error: 'attributeName' not a string literal");
             }
             $this->attributeName = $config['attributeName'];
@@ -74,7 +78,7 @@ class AddCapability extends SimpleSAML\Auth\ProcessingFilter
 
         if (array_key_exists('capability', $config)) {
             if (!is_array($config['capability'])) {
-                SimpleSAML\Logger::error("[AddCapability] Configuration error: 'capability' not a string literal");
+                Logger::error("[AddCapability] Configuration error: 'capability' not a string literal");
                 throw new Exception("AddCapability configuration error: 'capability' not a string literal");
             }
             $this->capability = $config['capability'];
@@ -82,7 +86,7 @@ class AddCapability extends SimpleSAML\Auth\ProcessingFilter
 
         if (array_key_exists('idpBlacklist', $config)) {
             if (!is_array($config['idpBlacklist'])) {
-                SimpleSAML\Logger::error("[AddCapability] Configuration error: 'idpBlacklist' not a string literal");
+                Logger::error("[AddCapability] Configuration error: 'idpBlacklist' not a string literal");
                 throw new Exception("AddCapability configuration error: 'idpBlacklist' not a string literal");
             }
             $this->idpBlacklist = $config['idpBlacklist'];
@@ -90,7 +94,7 @@ class AddCapability extends SimpleSAML\Auth\ProcessingFilter
 
         if (array_key_exists('idpWhitelist', $config)) {
             if (!is_array($config['idpWhitelist'])) {
-                SimpleSAML\Logger::error("[AddCapability] Configuration error: 'idpWhitelist' not a string literal");
+                Logger::error("[AddCapability] Configuration error: 'idpWhitelist' not a string literal");
                 throw new Exception("AddCapability configuration error: 'idpWhitelist' not a string literal");
             }
             $this->idpWhitelist = $config['idpWhitelist'];
@@ -98,15 +102,21 @@ class AddCapability extends SimpleSAML\Auth\ProcessingFilter
 
         if (array_key_exists('entityAttributeWhitelist', $config)) {
             if (!is_array($config['entityAttributeWhitelist'])) {
-                SimpleSAML\Logger::error("[AddCapability] Configuration error: 'entityAttributeWhitelist' not a string literal");
-                throw new Exception("AddCapability configuration error: 'entityAttributeWhitelist' not a string literal");
+                Logger::error(
+                    "[AddCapability] Configuration error: 'entityAttributeWhitelist' not a string literal"
+                );
+                throw new Exception(
+                    "AddCapability configuration error: 'entityAttributeWhitelist' not a string literal"
+                );
             }
             $this->entityAttributeWhitelist = $config['entityAttributeWhitelist'];
         }
 
         if (array_key_exists('entitlementWhitelist', $config)) {
             if (!is_array($config['entitlementWhitelist'])) {
-                SimpleSAML\Logger::error("[AddCapability] Configuration error: 'entitlementWhitelist' not a string literal");
+                Logger::error(
+                    "[AddCapability] Configuration error: 'entitlementWhitelist' not a string literal"
+                );
                 throw new Exception("AddCapability configuration error: 'entitlementWhitelist' not a string literal");
             }
             $this->entitlementWhitelist = $config['entitlementWhitelist'];
@@ -128,8 +138,11 @@ class AddCapability extends SimpleSAML\Auth\ProcessingFilter
         if (empty($state['Attributes'][$this->attributeName])) {
             $state['Attributes'][$this->attributeName] = array();
         }
-        $state['Attributes'][$this->attributeName] = array_merge($state['Attributes'][$this->attributeName], $this->capability);
-        SimpleSAML\Logger::debug("[AddCapability] Adding capability " . var_export($this-->capability, true));
+        $state['Attributes'][$this->attributeName] = array_merge(
+            $state['Attributes'][$this->attributeName],
+            $this->capability
+        );
+        Logger::debug("[AddCapability] Adding capability " . var_export($this->capability, true));
     }
 
 
@@ -141,12 +154,12 @@ class AddCapability extends SimpleSAML\Auth\ProcessingFilter
         // will contain an entry id for the remote IdP.
         if (!empty($state['saml:sp:IdP'])) {
             $idpEntityId = $state['saml:sp:IdP'];
-            $idpMetadata = SimpleSAML\Metadata\MetaDataStorageHandler::getMetadataHandler()->getMetaData($idpEntityId, 'saml20-idp-remote');
+            $idpMetadata = MetaDataStorageHandler::getMetadataHandler()->getMetaData($idpEntityId, 'saml20-idp-remote');
         } else {
             $idpEntityId = $state['Source']['entityid'];
             $idpMetadata = $state['Source'];
         }
-        SimpleSAML\Logger::debug("[AddCapability] IdP="
+        Logger::debug("[AddCapability] IdP="
             . var_export($idpEntityId, true));
         if (!empty($this->idpBlacklist) && in_array($idpEntityId, $this->idpBlacklist)) {
             return false;
@@ -154,10 +167,16 @@ class AddCapability extends SimpleSAML\Auth\ProcessingFilter
         if (!empty($this->idpWhitelist) && in_array($idpEntityId, $this->idpWhitelist)) {
             return true;
         }
-        if (!empty($idpMetadata['EntityAttributes']) && empty($this->getEntityAttributesDiff($this->entityAttributeWhitelist, $idpMetadata['EntityAttributes']))) {
+        if (
+            !empty($idpMetadata['EntityAttributes'])
+            && empty($this->getEntityAttributesDiff($this->entityAttributeWhitelist, $idpMetadata['EntityAttributes']))
+        ) {
             return true;
         }
-        if (!empty($state['Attributes'][$this->attributeName]) && !empty(array_intersect($state['Attributes'][$this->attributeName], $this->entitlementWhitelist))) {
+        if (
+            !empty($state['Attributes'][$this->attributeName])
+            && !empty(array_intersect($state['Attributes'][$this->attributeName], $this->entitlementWhitelist))
+        ) {
             return true;
         }
         return false;
