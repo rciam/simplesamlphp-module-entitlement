@@ -1,5 +1,6 @@
 <?php
 
+namespace SimpleSAML\Module\entitlement\Auth\Process;
 
 /**
  * Filter to create target attribute based on value(s) in source attribute
@@ -8,7 +9,7 @@
  * @package SimpleSAMLphp
  */
 
-class sspmod_entitlement_Auth_Process_AttributeValueMap extends SimpleSAML_Auth_ProcessingFilter
+class AttributeValueMap extends SimpleSAML\Auth\ProcessingFilter
 {
     /**
      * The name of the attribute we should assign values to (ie: the target attribute).
@@ -58,7 +59,7 @@ class sspmod_entitlement_Auth_Process_AttributeValueMap extends SimpleSAML_Auth_
                     $this->keep = true;
                 } else {
                     // unknown configuration option, log it and ignore the error
-                    SimpleSAML_Logger::warning(
+                    SimpleSAML\Logger::warning(
                         "AttributeValueMap: unknown configuration flag '".var_export($value, true)."'"
                     );
                 }
@@ -101,7 +102,7 @@ class sspmod_entitlement_Auth_Process_AttributeValueMap extends SimpleSAML_Auth_
      */
     public function process(&$request)
     {
-        SimpleSAML_Logger::debug('Processing the AttributeValueMap filter.');
+        SimpleSAML\Logger::debug('Processing the AttributeValueMap filter.');
 
         assert(is_array($request));
         assert(array_key_exists('Attributes', $request));
@@ -121,7 +122,7 @@ class sspmod_entitlement_Auth_Process_AttributeValueMap extends SimpleSAML_Auth_
                     $values = [$values];
                 }
                 if (count(array_intersect($values, $sourceattribute)) > 0) {
-                    SimpleSAML_Logger::debug("AttributeValueMap: intersect match for '$value'");
+                    SimpleSAML\Logger::debug("AttributeValueMap: intersect match for '$value'");
                     $targetvalues[] = $value;
                 }
             }
