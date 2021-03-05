@@ -28,31 +28,31 @@ class AddCapability extends ProcessingFilter
      * The assigned capability value(s).
      * @var string
      */
-    private $capability = array();
+    private $capability = [];
 
 
     /**
      * List of IdP entity IDs excluded from this capability.
      */
-    private $idpBlacklist = array();
+    private $idpBlacklist = [];
 
 
     /**
      * List of IdP entity IDs qualifying for this capability.
      */
-    private $idpWhitelist = array();
+    private $idpWhitelist = [];
 
 
     /**
      * Combination of entity attributes qualifying for this capability.
      */
-    private $entityAttributeWhitelist = array();
+    private $entityAttributeWhitelist = [];
 
 
     /**
      * List of user entitlements qualifying for this capability.
      */
-    private $entitlementWhitelist = array();
+    private $entitlementWhitelist = [];
 
 
     /**
@@ -136,7 +136,7 @@ class AddCapability extends ProcessingFilter
             return;
         }
         if (empty($state['Attributes'][$this->attributeName])) {
-            $state['Attributes'][$this->attributeName] = array();
+            $state['Attributes'][$this->attributeName] = [];
         }
         $state['Attributes'][$this->attributeName] = array_merge(
             $state['Attributes'][$this->attributeName],
@@ -185,7 +185,7 @@ class AddCapability extends ProcessingFilter
 
     private function getEntityAttributesDiff($array1, $array2)
     {
-        $diff = array();
+        $diff = [];
         foreach ($array1 as $key => $value) {
             if (empty($array2[$key]) || !is_array($array2[$key])) {
                 $diff[$key] = $value;
