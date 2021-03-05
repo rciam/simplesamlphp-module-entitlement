@@ -171,9 +171,9 @@ class AddCapability extends SimpleSAML\Auth\ProcessingFilter
             if (empty($array2[$key]) || !is_array($array2[$key])) {
                 $diff[$key] = $value;
             } else {
-                $new_diff = array_diff($value, $array2[$key]);
-                if (!empty($new_diff)) {
-                    $diff[$key] = $new_diff;
+                $newDiff = array_diff($value, $array2[$key]);
+                if (!empty($newDiff)) {
+                    $diff[$key] = $newDiff;
                 }
             }
         }
