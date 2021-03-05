@@ -8,6 +8,22 @@ use SimpleSAML\Logger;
 /**
  * Filter to create target attribute based on value(s) in source attribute
  *
+ * Example config
+ * 201 => [
+ *     'class' => 'entitlement:AttributeValueMap',
+ *     'sourceAttribute' => 'eduPersonEntitlement', // or 'urn:oid:1.3.6.1.4.1.5923.1.1.1.7',
+ *     'targetAttribute' => 'eduPersonEntitlement', // or 'urn:oid:1.3.6.1.4.1.5923.1.1.1.7',
+ *     'values' => [
+ *         'urn:mace:example.org:group:vo.example.org:role=member#foo.example.org' => [
+ *             'urn:mace:idp.example.org:group:another.vo.example.org:role=member#bar.example.org',
+ *         ],
+ *         'urn:mace:example.org:group:vo.example.org:role=vm_operator#foo.example.org' => [
+ *             'urn:mace:idp.example.org:group:another.vo.example.org:role=vm_operator#bar.example.org',
+ *         ],
+ *     ],
+ *     '%keep',
+ * ],
+ *
  * @author Martin van Es, m7
  * @package SimpleSAMLphp
  */

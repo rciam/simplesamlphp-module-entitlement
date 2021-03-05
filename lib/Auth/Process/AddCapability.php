@@ -13,6 +13,30 @@ use SimpleSAML\Metadata\MetaDataStorageHandler;
  * entitled to perform. Capabilities can be used to convey – in a compact form –
  * authorisation information. Capability values are formatted as URNs following
  * the syntax specified in https://aarc-community.org/guidelines/aarc-g027
+ *
+ * Example config
+ * XX => [
+ *     'class' => 'entitlement:AddCapability',
+ *     'attributeName' => "eduPersonEntitlement",
+ *     'capability' => [
+ *         'urn:mace:example.org:group:vo.example.org:role=member#foo.example.org',
+ *     ],
+ *     'idpWhitelist' => [ // or idpBlacklist
+ *         'https://idp.example1.org/entityId',
+ *         'https://idp.example2.org/entityId',
+ *     ],
+ *     'entityAttributeWhitelist' => [
+ *         'http://macedir.org/entity-category-support' => [
+ *             'http://refeds.org/category/research-and-scholarship',
+ *         ],
+ *         'urn:oasis:names:tc:SAML:attribute:assurance-certification' => [
+ *             'https://refeds.org/sirtfi',
+ *         ],
+ *     ],
+ *     'entitlementWhitelist' => [
+ *         'urn:mace:idp.example.org:group:another.vo.example.org:role=member#bar.example.org',
+ *     ],
+ * ],
  */
 class AddCapability extends ProcessingFilter
 {
