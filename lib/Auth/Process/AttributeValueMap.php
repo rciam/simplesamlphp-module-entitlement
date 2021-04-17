@@ -1,32 +1,52 @@
 <?php
 
+namespace SimpleSAML\Module\entitlement\Auth\Process;
+
+use SimpleSAML\Auth\ProcessingFilter;
+use SimpleSAML\Logger;
 
 /**
  * Filter to create target attribute based on value(s) in source attribute
+ *
+ * Example config
+ * 201 => [
+ *     'class' => 'entitlement:AttributeValueMap',
+ *     'sourceAttribute' => 'eduPersonEntitlement', // or 'urn:oid:1.3.6.1.4.1.5923.1.1.1.7',
+ *     'targetAttribute' => 'eduPersonEntitlement', // or 'urn:oid:1.3.6.1.4.1.5923.1.1.1.7',
+ *     'values' => [
+ *         'urn:mace:example.org:group:vo.example.org:role=member#foo.example.org' => [
+ *             'urn:mace:idp.example.org:group:another.vo.example.org:role=member#bar.example.org',
+ *         ],
+ *         'urn:mace:example.org:group:vo.example.org:role=vm_operator#foo.example.org' => [
+ *             'urn:mace:idp.example.org:group:another.vo.example.org:role=vm_operator#bar.example.org',
+ *         ],
+ *     ],
+ *     '%keep',
+ * ],
  *
  * @author Martin van Es, m7
  * @package SimpleSAMLphp
  */
 
-class sspmod_entitlement_Auth_Process_AttributeValueMap extends SimpleSAML_Auth_ProcessingFilter
+class AttributeValueMap extends ProcessingFilter
 {
     /**
      * The name of the attribute we should assign values to (ie: the target attribute).
      */
-    private $targetattribute;
+    private $targetAttribute;
 
     /**
      * The name of the attribute we should create values from.
      */
-    private $sourceattribute;
+    private $sourceAttribute;
 
     /**
-     * The required $sourceattribute values and target affiliations.
+     * The required $sourceAttribute values and target affiliations.
      */
     private $values = [];
-    
+
     /**
-     * Whether $sourceattribute should be kept or not.
+     * Whether $sourceAttribute should be kept or not.
      */
     private $keep = false;
 
@@ -34,7 +54,7 @@ class sspmod_entitlement_Auth_Process_AttributeValueMap extends SimpleSAML_Auth_
      * Whether $target attribute values should be replaced by new values or not.
      */
     private $replace = false;
-    
+
     /**
      * Initialize the filter.
      *
@@ -58,23 +78,21 @@ class sspmod_entitlement_Auth_Process_AttributeValueMap extends SimpleSAML_Auth_
                     $this->keep = true;
                 } else {
                     // unknown configuration option, log it and ignore the error
-                    SimpleSAML_Logger::warning(
-                        "AttributeValueMap: unknown configuration flag '".var_export($value, true)."'"
-                    );
+                    Logger::warning("AttributeValueMap: unknown configuration flag '" . var_export($value, true) . "'");
                 }
                 continue;
             }
 
             // set the target attribute
-            if ($name === 'targetattribute') {
-                $this->targetattribute = $value;
+            if ($name === 'targetAttribute') {
+                $this->targetAttribute = $value;
             }
 
             // set the source attribute
-            if ($name === 'sourceattribute') {
-                $this->sourceattribute = $value;
+            if ($name === 'sourceAttribute') {
+                $this->sourceAttribute = $value;
             }
-        
+
             // set the values
             if ($name === 'values') {
                 $this->values = $value;
@@ -82,11 +100,11 @@ class sspmod_entitlement_Auth_Process_AttributeValueMap extends SimpleSAML_Auth_
         }
 
         // now validate it
-        if (!is_string($this->sourceattribute)) {
-            throw new Exception("AttributeValueMap: 'sourceattribute' configuration option not set.");
+        if (!is_string($this->sourceAttribute)) {
+            throw new Exception("AttributeValueMap: 'sourceAttribute' configuration option not set.");
         }
-        if (!is_string($this->targetattribute)) {
-            throw new Exception("AttributeValueMap: 'targetattribute' configuration option not set.");
+        if (!is_string($this->targetAttribute)) {
+            throw new Exception("AttributeValueMap: 'targetAttribute' configuration option not set.");
         }
         if (!is_array($this->values)) {
             throw new Exception("AttributeValueMap: 'values' configuration option is not an array.");
@@ -101,46 +119,46 @@ class sspmod_entitlement_Auth_Process_AttributeValueMap extends SimpleSAML_Auth_
      */
     public function process(&$request)
     {
-        SimpleSAML_Logger::debug('Processing the AttributeValueMap filter.');
+        Logger::debug('Processing the AttributeValueMap filter.');
 
         assert(is_array($request));
         assert(array_key_exists('Attributes', $request));
         $attributes = &$request['Attributes'];
 
-        if (!array_key_exists($this->sourceattribute, $attributes)) {
+        if (!array_key_exists($this->sourceAttribute, $attributes)) {
             // the source attribute does not exist, nothing to do here
             return;
         }
 
-        $sourceattribute = $attributes[$this->sourceattribute];
-        $targetvalues = [];
+        $sourceAttribute = $attributes[$this->sourceAttribute];
+        $targetValues = [];
 
-        if (is_array($sourceattribute)) {
+        if (is_array($sourceAttribute)) {
             foreach ($this->values as $value => $values) {
                 if (!is_array($values)) {
                     $values = [$values];
                 }
-                if (count(array_intersect($values, $sourceattribute)) > 0) {
-                    SimpleSAML_Logger::debug("AttributeValueMap: intersect match for '$value'");
-                    $targetvalues[] = $value;
+                if (count(array_intersect($values, $sourceAttribute)) > 0) {
+                    Logger::debug("AttributeValueMap: intersect match for '$value'");
+                    $targetValues[] = $value;
                 }
             }
         }
 
-        if (count($targetvalues) > 0) {
-            if ($this->replace || !array_key_exists($this->targetattribute, $attributes)) {
-                $attributes[$this->targetattribute] = $targetvalues;
+        if (count($targetValues) > 0) {
+            if ($this->replace || !array_key_exists($this->targetAttribute, $attributes)) {
+                $attributes[$this->targetAttribute] = $targetValues;
             } else {
-                $attributes[$this->targetattribute] = array_unique(array_merge(
-                    $attributes[$this->targetattribute],
-                    $targetvalues
+                $attributes[$this->targetAttribute] = array_unique(array_merge(
+                    $attributes[$this->targetAttribute],
+                    $targetValues
                 ));
             }
         }
 
         if (!$this->keep) {
             // no need to keep the source attribute
-            unset($attributes[$this->sourceattribute]);
+            unset($attributes[$this->sourceAttribute]);
         }
     }
 }
