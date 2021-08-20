@@ -3,6 +3,7 @@
 namespace SimpleSAML\Module\entitlement\Auth\Process;
 
 use SimpleSAML\Auth\ProcessingFilter;
+use SimpleSAML\Error\Exception;
 use SimpleSAML\Logger;
 
 /**
