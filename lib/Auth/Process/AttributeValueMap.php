@@ -124,8 +124,11 @@ class AttributeValueMap extends ProcessingFilter
 
         assert(is_array($request));
         assert(array_key_exists('Attributes', $request));
-        $attributes = &$request['Attributes'];
+        $this->mapAttributeValue($request['Attributes']);
+    }
 
+    public function mapAttributeValue(&$attributes)
+    {
         if (!array_key_exists($this->sourceAttribute, $attributes)) {
             // the source attribute does not exist, nothing to do here
             return;
