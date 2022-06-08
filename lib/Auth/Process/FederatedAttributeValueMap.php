@@ -96,9 +96,9 @@ class FederatedAttributeValueMap extends ProcessingFilter
             Logger::error(
                 "[federatedattributevaluemap] process: ' . $this->authnAuthorityAttribute . ' value is empty
                  or does not exist at Attributes");
-                 throw new Error\Error(
-                    ['UNHANDLEDEXCEPTION', 'Ooops something went wrong.']
-                );
+            throw new Error\Error(
+                ['UNHANDLEDEXCEPTION', 'Ooops something went wrong.']
+            );
 
         }
         $idpEntityID = $request['Attributes'][$this->authnAuthorityAttribute][0];
@@ -106,7 +106,7 @@ class FederatedAttributeValueMap extends ProcessingFilter
         if (array_key_exists($idpEntityID, $this->idpValueMap)) {  
             $this->idpValueMap[$idpEntityID]->mapAttributeValue($request['Attributes']);
         } else {
-            Logger::debug('skipping FederatedAttributeValueMap filter for authnAuthority ' + $idpEntityID);    
+            Logger::debug('skipping FederatedAttributeValueMap filter for authnAuthority ' . $idpEntityID);    
         }
     }
 }
