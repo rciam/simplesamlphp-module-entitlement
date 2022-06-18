@@ -127,7 +127,7 @@ class sspmod_entitlement_Auth_Process_AddCapability extends SimpleSAML_Auth_Proc
             $state['Attributes'][$this->attributeName] = array();
         }
         $state['Attributes'][$this->attributeName] = array_merge($state['Attributes'][$this->attributeName], $this->capability);
-        SimpleSAML_Logger::debug("[AddCapability] Adding capability " . var_export($this-->capability, true));
+        SimpleSAML_Logger::debug("[AddCapability] Adding capability " . var_export($this->capability, true));
     }
 
 
@@ -152,7 +152,7 @@ class sspmod_entitlement_Auth_Process_AddCapability extends SimpleSAML_Auth_Proc
         if (!empty($this->idpWhitelist) && in_array($idpEntityId, $this->idpWhitelist)) {
             return true;
         }
-        if (!empty($idpMetadata['EntityAttributes']) && empty($this->getEntityAttributesDiff($this->entityAttributeWhitelist, $idpMetadata['EntityAttributes']))) {
+        if (!empty($this->entityAttributeWhitelist) && !empty($idpMetadata['EntityAttributes']) && empty($this->getEntityAttributesDiff($this->entityAttributeWhitelist, $idpMetadata['EntityAttributes']))) {
             return true;
         }
         if (!empty($state['Attributes'][$this->attributeName]) && !empty(array_intersect($state['Attributes'][$this->attributeName], $this->entitlementWhitelist))) {
