@@ -193,7 +193,8 @@ class AddCapability extends ProcessingFilter
             return true;
         }
         if (
-            !empty($idpMetadata['EntityAttributes'])
+            !empty($this->entityAttributeWhitelist)
+            && !empty($idpMetadata['EntityAttributes'])
             && empty($this->getEntityAttributesDiff($this->entityAttributeWhitelist, $idpMetadata['EntityAttributes']))
         ) {
             return true;
