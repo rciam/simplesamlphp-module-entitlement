@@ -81,6 +81,18 @@ class AddCapability extends ProcessingFilter
 
 
     /**
+     * The attribute that will hold the User ID.
+     * @var string
+     */
+    private $userIdAttributeName = 'voPersonID';
+
+    /**
+     * List of user IDs qualifying for this capability.
+     */
+    private $userIdIncludelist = [];
+
+
+    /**
      * Initialize this filter, parse configuration
      *
      * @param array $config Configuration information about this filter.
@@ -103,24 +115,24 @@ class AddCapability extends ProcessingFilter
 
         if (array_key_exists('capability', $config)) {
             if (!is_array($config['capability'])) {
-                Logger::error("[AddCapability] Configuration error: 'capability' not a string literal");
-                throw new Exception("AddCapability configuration error: 'capability' not a string literal");
+                Logger::error("[AddCapability] Configuration error: 'capability' not an array");
+                throw new Exception("AddCapability configuration error: 'capability' not an array");
             }
             $this->capability = $config['capability'];
         }
 
         if (array_key_exists('idpBlacklist', $config)) {
             if (!is_array($config['idpBlacklist'])) {
-                Logger::error("[AddCapability] Configuration error: 'idpBlacklist' not a string literal");
-                throw new Exception("AddCapability configuration error: 'idpBlacklist' not a string literal");
+                Logger::error("[AddCapability] Configuration error: 'idpBlacklist' not an array");
+                throw new Exception("AddCapability configuration error: 'idpBlacklist' not an array");
             }
             $this->idpBlacklist = $config['idpBlacklist'];
         }
 
         if (array_key_exists('idpWhitelist', $config)) {
             if (!is_array($config['idpWhitelist'])) {
-                Logger::error("[AddCapability] Configuration error: 'idpWhitelist' not a string literal");
-                throw new Exception("AddCapability configuration error: 'idpWhitelist' not a string literal");
+                Logger::error("[AddCapability] Configuration error: 'idpWhitelist' not an array");
+                throw new Exception("AddCapability configuration error: 'idpWhitelist' not an array");
             }
             $this->idpWhitelist = $config['idpWhitelist'];
         }
@@ -128,10 +140,10 @@ class AddCapability extends ProcessingFilter
         if (array_key_exists('entityAttributeWhitelist', $config)) {
             if (!is_array($config['entityAttributeWhitelist'])) {
                 Logger::error(
-                    "[AddCapability] Configuration error: 'entityAttributeWhitelist' not a string literal"
+                    "[AddCapability] Configuration error: 'entityAttributeWhitelist' not an array"
                 );
                 throw new Exception(
-                    "AddCapability configuration error: 'entityAttributeWhitelist' not a string literal"
+                    "AddCapability configuration error: 'entityAttributeWhitelist' not an array"
                 );
             }
             $this->entityAttributeWhitelist = $config['entityAttributeWhitelist'];
@@ -140,11 +152,21 @@ class AddCapability extends ProcessingFilter
         if (array_key_exists('entitlementWhitelist', $config)) {
             if (!is_array($config['entitlementWhitelist'])) {
                 Logger::error(
-                    "[AddCapability] Configuration error: 'entitlementWhitelist' not a string literal"
+                    "[AddCapability] Configuration error: 'entitlementWhitelist' not an array"
                 );
-                throw new Exception("AddCapability configuration error: 'entitlementWhitelist' not a string literal");
+                throw new Exception("AddCapability configuration error: 'entitlementWhitelist' not an array");
             }
             $this->entitlementWhitelist = $config['entitlementWhitelist'];
+        }
+
+        if (array_key_exists('userIdIncludelist', $config)) {
+            if (!is_array($config['userIdIncludelist'])) {
+                Logger::error(
+                    "[AddCapability] Configuration error: 'userIdIncludelist' not an array"
+                );
+                throw new Exception("AddCapability configuration error: 'userIdIncludelist' not an array");
+            }
+            $this->userIdIncludelist = $config['userIdIncludelist'];
         }
     }
 
@@ -202,6 +224,12 @@ class AddCapability extends ProcessingFilter
         if (
             !empty($state['Attributes'][$this->attributeName])
             && !empty(array_intersect($state['Attributes'][$this->attributeName], $this->entitlementWhitelist))
+        ) {
+            return true;
+        }
+        if (
+            !empty($state['Attributes'][$this->userIdAttributeName])
+            && !empty(array_intersect($state['Attributes'][$this->userIdAttributeName], $this->userIdIncludelist))
         ) {
             return true;
         }
